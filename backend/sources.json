@@ -1,0 +1,24 @@
+{
+  "sources": [
+    {
+      "name": "BBC World",
+      "rss": "https://feeds.bbci.co.uk/news/world/rss.xml"
+    },
+    {
+      "name": "Reuters World",
+      "rss": "https://www.reuters.com/rssFeed/worldNews"
+    },
+    {
+      "name": "CNN World",
+      "rss": "http://rss.cnn.com/rss/edition_world.rss"
+    },
+    {
+      "name": "El País",
+      "rss": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada"
+    },
+    {
+      "name": "AP News",
+      "rss": "https://apnews.com/rss"
+    }
+  ]
+}
