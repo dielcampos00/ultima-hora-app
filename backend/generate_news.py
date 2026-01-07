@@ -1,50 +1,40 @@
-import json
 import feedparser
+import json
 from datetime import datetime
 
-SOURCES_FILE = "backend/sources.json"
-NEWS_FILE = "backend/news.json"
-
-def load_sources():
-    with open(SOURCES_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)["sources"]
-
-def load_news():
-    try:
-        with open(NEWS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except:
-        return []
-
-def save_news(news):
-    with open(NEWS_FILE, "w", encoding="utf-8") as f:
-        json.dump(news, f, ensure_ascii=False, indent=2)
-
-def already_exists(news, title):
-    return any(n["title"] == title for n in news)
-
-def generate_note(entry, source):
-    now = datetime.now().strftime("%H:%M")
-    return {
-        "hora": now,
-        "title": entry.title,
-        "contexto": entry.summary[:400],
-        "fuente": source["name"],
-        "link": entry.link
+# FUENTES RSS (puedes agregar más después)
+SOURCES = [
+    {
+        "name": "BBC World",
+        "url": "https://feeds.bbci.co.uk/news/world/rss.xml"
+    },
+    {
+        "name": "CNN World",
+        "url": "http://rss.cnn.com/rss/edition_world.rss"
     }
+]
 
-def main():
-    sources = load_sources()
-    news = load_news()
+news = []
 
-    for source in sources:
-        feed = feedparser.parse(source["rss"])
-        for entry in feed.entries[:1]:
-            if not already_exists(news, entry.title):
-                note = generate_note(entry, source)
-                news.insert(0, note)
-                save_news(news)
-                return
+for source in SOURCES:
+    feed = feedparser.parse(source["url"])
+    if feed.entries:
+        entry = feed.entries[0]
 
-if __name__ == "__main__":
-    main()
+        hora_actual = datetime.utcnow().strftime("%H:%M UTC")
+
+        noticia = {
+            "hora": hora_actual,
+            "title": entry.title,
+            "contexto": entry.summary if "summary" in entry else "",
+            "fuente": source["name"],
+            "link": entry.link
+        }
+
+        news.append(noticia)
+
+# Guardar en JSON
+with open("backend/news.json", "w", encoding="utf-8") as f:
+    json.dump(news, f, ensure_ascii=False, indent=2)
+
+print("Noticias actualizadas correctamente")
